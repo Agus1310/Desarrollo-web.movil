@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zonas Responsivas</title>
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+  }
+
+  .container-fluid {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  .zonas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 20px;
+  }
+
+  .zona {
+    flex: 1 1 300px;
+    background: #4A90D9;
+    color: white;
+    padding: 40px;
+    text-align: center;
+    border-radius: 8px;
+  }
+</style>
+</head>
+<body>
+  <div class="container-fluid">
+    <h1>Mi Actividad Responsiva</h1>
+    <div class="zonas">
+      <div class="zona">Zona 1</div>
+      <div class="zona">Zona 2</div>
+      <div class="zona">Zona 3</div>
+    </div>
+  </div>
+</body>
+</html>
