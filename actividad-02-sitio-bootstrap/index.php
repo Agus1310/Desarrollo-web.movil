@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </head>
-<body>
+<body onload="saludar()">
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
@@ -46,6 +46,9 @@
         <a href="productos.php">Ir a Productos</a><br>
         <a href="servicios.php">Ir a Servicios</a><br>
         <a href="contacto.php">Ir a Contacto</a>
+
+        <p id="mensaje" class="mt-3"></p>
+        <button class="btn btn-primary" onclick="cambiarColor()">Cambiar color de fondo</button>
     </div>
 
     <!-- Footer -->
@@ -56,6 +59,22 @@
             <div class="col-4"></div>
         </div>
     </div>
+
+    <script>
+        function saludar() {
+            let mensaje = document.getElementById("mensaje");
+            mensaje.textContent = "Bienvenido a MiEmpresa";
+        }
+
+        function cambiarColor() {
+            let contenedor = document.querySelector(".bg-warning");
+            if (contenedor.style.backgroundColor === "lightblue") {
+                contenedor.style.backgroundColor = "";
+            } else {
+                contenedor.style.backgroundColor = "lightblue";
+            }
+        }
+    </script>
 
 </body>
 </html>
