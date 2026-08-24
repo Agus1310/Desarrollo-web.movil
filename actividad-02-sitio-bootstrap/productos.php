@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </head>
-<body>
+<body onload="mostrarProductos()">
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
@@ -33,25 +33,11 @@
         </div>
     </nav>
 
-    <!-- Carrusel -->
-    <div id="carouselProductos" class="carousel slide bg-dark" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img src="img/producto1.jpg" class="d-block w-100" alt="Producto 1" style="max-height:500px; object-fit:contain;">
-            </div>
-            <div class="carousel-item">
-                <img src="img/producto2.jpg" class="d-block w-100" alt="Producto 2" style="max-height:500px; object-fit:contain;">
-            </div>
-            <div class="carousel-item">
-                <img src="img/producto3.jpg" class="d-block w-100" alt="Producto 3" style="max-height:500px; object-fit:contain;">
-            </div>
-        </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselProductos" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselProductos" data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
-        </button>
+    <!-- Container -->
+    <div class="container-fluid bg-warning py-4">
+        <h2>Nuestros Productos</h2>
+        <div id="lista-productos" class="row"></div>
+        <button class="btn btn-dark mt-2" onclick="agregarProducto()">Agregar producto</button>
     </div>
 
     <!-- Footer -->
@@ -62,6 +48,39 @@
             <div class="col-4"></div>
         </div>
     </div>
+
+    <script>
+        // Array de objetos con los productos
+        let productos = [
+            {nombre: "Producto 1", precio: 1000},
+            {nombre: "Producto 2", precio: 2000},
+            {nombre: "Producto 3", precio: 3000}
+        ];
+
+        function mostrarProductos() {
+            let contenedor = document.getElementById("lista-productos");
+            contenedor.innerHTML = "";
+
+            productos.forEach(function(p) {
+                let div = document.createElement("div");
+                div.className = "col-md-4";
+                div.innerHTML = `<div class="card mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${p.nombre}</h5>
+                                        <p class="card-text">$${p.precio}</p>
+                                    </div>
+                                  </div>`;
+                contenedor.appendChild(div);
+            });
+        }
+
+        function agregarProducto() {
+            let numero = productos.length + 1;
+            let nuevo = {nombre: "Producto " + numero, precio: numero * 1000};
+            productos.push(nuevo);
+            mostrarProductos();
+        }
+    </script>
 
 </body>
 </html>
