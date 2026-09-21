@@ -1,0 +1,12 @@
+{
+  "name": "api-clases-fitexpress",
+  "version": "1.0.0",
+  "description": "API normal (sin base de datos) para las clases de Fit Express",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
