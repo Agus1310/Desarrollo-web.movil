@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fit Express — Comida real, rápido</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+    <div class="header-inner">
+        <a href="#inicio" class="logo">Fit&nbsp;Express</a>
+        <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+        <nav class="main-nav" id="mainNav">
+            <ul>
+                <li><a href="#menu">Menú</a></li>
+                <li><a href="#pedido">Mi pedido <span id="navCartCount" class="cart-badge">0</span></a></li>
+                <li><a href="#registro">Regístrate</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<main>
+
+    <!-- Hero -->
+    <section id="inicio" class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Combustible real para días que no paran.</h1>
+                <p>Bowls proteicos, snacks y batidos, listos en minutos. Pedís por acá y te llega frío, fresco y a tiempo.</p>
+                <div class="hero-actions">
+                    <a href="#menu" class="btn btn-primary">Ver el menú</a>
+                    <a href="#registro" class="btn btn-outline">Crear cuenta</a>
+                </div>
+            </div>
+            <img class="hero-image" src="images/hero-fitexpress.jpg" alt="Variedad de ingredientes frescos de Fit Express" loading="lazy">
+        </div>
+        <dl class="hero-stats">
+            <div><dt>25 min</dt><dd>tiempo promedio de entrega</dd></div>
+            <div><dt>6</dt><dd>preparaciones en el menú de hoy</dd></div>
+            <div><dt>100%</dt><dd>ingredientes frescos del día</dd></div>
+        </dl>
+    </section>
+
+    <!-- Menú / listado -->
+    <section id="menu" class="section">
+        <div class="section-heading">
+            <h2>Menú de hoy</h2>
+            <p>Elegí una preparación para ver el detalle, o agregala directo a tu pedido.</p>
+        </div>
+        <div id="menuGrid" class="menu-grid">
+            <!-- Las tarjetas se generan con JavaScript desde script.js -->
+        </div>
+    </section>
+
+    <!-- Detalle del producto -->
+    <section id="detalle" class="section detalle-section" hidden>
+        <div class="section-heading">
+            <h2>Detalle de la preparación</h2>
+        </div>
+        <article id="detalleContenido" class="detalle-card">
+            <!-- Se completa con JavaScript al elegir "Ver detalle" en el menú -->
+        </article>
+    </section>
+
+    <!-- Pedido / carrito -->
+    <section id="pedido" class="section pedido-section">
+        <div class="section-heading">
+            <h2>Mi pedido</h2>
+            <p>Esto es lo que llevás agregado hasta ahora.</p>
+        </div>
+
+        <div id="pedidoVacio" class="pedido-vacio">
+            Todavía no agregaste nada. Elegí algo del <a href="#menu">menú</a> para empezar tu pedido.
+        </div>
+
+        <table id="pedidoTabla" class="pedido-tabla" hidden>
+            <thead>
+                <tr>
+                    <th scope="col">Preparación</th>
+                    <th scope="col">Cantidad</th>
+                    <th scope="col">Subtotal</th>
+                    <th scope="col"><span class="sr-only">Quitar</span></th>
+                </tr>
+            </thead>
+            <tbody id="pedidoBody">
+                <!-- Filas generadas por JavaScript -->
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2">Total</td>
+                    <td id="pedidoTotal">$0</td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div id="pedidoAcciones" class="pedido-acciones" hidden>
+            <button type="button" id="btnVaciarPedido" class="btn btn-outline">Vaciar pedido</button>
+            <button type="button" id="btnConfirmarPedido" class="btn btn-primary">Confirmar pedido</button>
+        </div>
+
+        <div id="pedidoConfirmado" class="confirmacion" hidden>
+            <h3>¡Pedido confirmado!</h3>
+            <p id="pedidoConfirmadoTexto"></p>
+        </div>
+    </section>
+
+    <!-- Registro -->
+    <section id="registro" class="section registro-section">
+        <div class="section-heading">
+            <h2>Regístrate</h2>
+            <p>Creá tu cuenta para pedir más rápido la próxima vez.</p>
+        </div>
+
+        <form id="formRegistro" class="form-registro" novalidate>
+            <div class="campo">
+                <label for="nombre">Nombre</label>
+                <input type="text" id="nombre" name="nombre" autocomplete="name">
+                <span class="error" id="errorNombre"></span>
+            </div>
+
+            <div class="campo">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" autocomplete="email">
+                <span class="error" id="errorEmail"></span>
+            </div>
+
+            <div class="campo">
+                <label for="direccion">Dirección de entrega</label>
+                <input type="text" id="direccion" name="direccion" autocomplete="street-address">
+                <span class="error" id="errorDireccion"></span>
+            </div>
+
+            <div class="campo">
+                <label for="telefono">Teléfono (opcional)</label>
+                <input type="tel" id="telefono" name="telefono" autocomplete="tel" placeholder="+56 9 1234 5678">
+                <span class="error" id="errorTelefono"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Registrarme</button>
+        </form>
+
+        <div id="registroConfirmado" class="confirmacion" hidden>
+            <h3>¡Listo, <span id="registroNombre"></span>!</h3>
+            <p>Te registramos con el correo <strong id="registroEmail"></strong>, para que llegue a
+               <strong id="registroDireccion"></strong>.</p>
+            <button type="button" id="btnNuevoRegistro" class="btn btn-outline">Registrar otra cuenta</button>
+        </div>
+    </section>
+
+</main>
+
+<footer class="site-footer">
+    <p>Fit Express — comida real, rápido © 2026</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
