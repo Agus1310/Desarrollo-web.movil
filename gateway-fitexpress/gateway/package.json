@@ -1,0 +1,13 @@
+{
+  "name": "gateway-fitexpress",
+  "version": "1.0.0",
+  "description": "API Gateway que enruta las peticiones hacia la API de clases de Fit Express",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "express": "^4.19.2"
+  }
+}
