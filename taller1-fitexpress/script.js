@@ -96,7 +96,7 @@ function renderizarMenu() {
         card.className = "menu-card";
 
         card.innerHTML = `
-            <img src="https://picsum.photos/seed/${producto.id}/400/280" alt="${producto.nombre}" class="menu-img" loading="lazy">
+            <img src="images/${producto.id}.jpg" alt="${producto.nombre}" class="menu-img" loading="lazy">
             <span class="tag">${producto.tag}</span>
             <h3>${producto.nombre}</h3>
             <p>${producto.descripcion}</p>
@@ -116,7 +116,7 @@ function mostrarDetalle(id) {
     if (!producto) return;
 
     detalleContenido.innerHTML = `
-        <img src="https://picsum.photos/seed/${producto.id}/560/300" alt="${producto.nombre}" class="detalle-img" loading="lazy">
+        <img src="images/${producto.id}.jpg" alt="${producto.nombre}" class="detalle-img" loading="lazy">
         <span class="tag">${producto.tag}</span>
         <h3>${producto.nombre}</h3>
         <p>${producto.descripcion}</p>
