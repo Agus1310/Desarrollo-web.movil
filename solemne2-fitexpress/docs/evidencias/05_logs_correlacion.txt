@@ -1,0 +1,13 @@
+# Logs con id de correlacion: una sola solicitud POST /api/v1/orders seguida por todos los servicios
+# (request_id generado por el gateway y propagado en la cabecera X-Request-Id)
+
+2026-11-09 19:11:19,091 INFO auth request_id=9ef47862-c9a6-4a6d-ad43-b31ed81e3a82 POST /introspect status=200 1ms
+2026-11-09 19:11:19,144 INFO clients request_id=9ef47862-c9a6-4a6d-ad43-b31ed81e3a82 GET /internal/clients/USR-8b52c972 status=200 1ms
+2026-11-09 19:11:19,158 INFO inventory request_id=9ef47862-c9a6-4a6d-ad43-b31ed81e3a82 GET /internal/products status=200 1ms
+2026-11-09 19:11:19,174 INFO inventory request_id=9ef47862-c9a6-4a6d-ad43-b31ed81e3a82 POST /internal/reservas status=200 2ms
+2026-11-09 19:11:19,176 INFO orders request_id=9ef47862-c9a6-4a6d-ad43-b31ed81e3a82 POST /orders status=201 72ms
+2026-11-09 19:11:19,178 INFO gateway request_id=9ef47862-c9a6-4a6d-ad43-b31ed81e3a82 ip=127.0.0.1 POST /api/v1/orders status=201 user=USR-8b52c972 99ms
+
+# Busqueda de tokens o contrasenas en los logs completos de la demo:
+$ grep -c -i -E 'bearer|password|access_token|ClaveSegura' backend.log
+0

@@ -1,0 +1,90 @@
+@startuml 04_clases_gateway
+title Módulo 5 - Clases del API Gateway, políticas y GraphQL Gateway
+skinparam classAttributeIconSize 0
+hide empty members
+
+class ApiGateway {
+  puerto: 8000
+  origenesPermitidos: String[*]
+  +entrada(request): Response
+  +logout(request): Response
+}
+class RouteDefinition {
+  verbo: GET|POST|PUT|PATCH|DELETE
+  rutaExterna: String
+  acceso: publico|autenticado|cliente|operador
+  rutaInterna: String
+}
+class AuthenticationPolicy {
+  +validarBearer(token): Identidad
+}
+class AuthorizationPolicy {
+  +rolPermitido(acceso, rol): Boolean
+}
+class RateLimitPolicy {
+  limitePorMinuto: 300
+  limiteLogin: 20
+  +supera(ip): Boolean
+}
+class HeaderPolicy {
+  permitidas: content-type, idempotency-key, x-proveedor-firma
+  +limpiar(headers): Map
+}
+class ErrorMapper {
+  +timeout(): 504
+  +sinConexion(): 503
+  +sinSecretos(): 503
+}
+class ServiceTarget {
+  nombre: String
+  url: String
+  timeout: 8s
+}
+class SecretProvider {
+  vaultAddr: String
+  cache: 60 s
+  +llaves(): Map
+}
+class "Auth Service" as AuthSvc <<servicio privado>>
+class "HashiCorp Vault" as Vault <<gestor de secretos>>
+
+class GraphQLGateway <<servicio privado>> {
+  maxProfundidad: 4
+  maxAlias: 5
+  maxLargo: 2000
+  +graphql(query, variables)
+}
+class Schema {
+  Query.resumenPedido(id)
+  Query.misPedidos(limite)
+}
+class Resolver {
+  +resolverResumen()
+  +resolverMisPedidos()
+  +resolverClienteId()  // solo operador
+  +resolverPago()
+}
+class "Adaptadores REST\n(orders, inventory, payments)" as Adapters
+
+ApiGateway "1" *-- "1..*" RouteDefinition : publica >
+RouteDefinition "1..*" --> "1" ServiceTarget : apunta a >
+ApiGateway "1" *-- "1" AuthenticationPolicy
+ApiGateway "1" *-- "1" AuthorizationPolicy
+ApiGateway "1" *-- "1" RateLimitPolicy
+ApiGateway "1" *-- "1" HeaderPolicy
+ApiGateway "1" *-- "1" ErrorMapper
+ApiGateway "1" --> "1" SecretProvider
+AuthenticationPolicy ..> AuthSvc : <<llama /introspect>>
+SecretProvider ..> Vault : <<lee secret/fitexpress/gateway>>
+ServiceTarget "1" --> "0..1" GraphQLGateway : cuando ruta = /graphql
+GraphQLGateway "1" *-- "1" Schema
+Schema "1" *-- "1..*" Resolver
+Resolver ..> Adapters : <<usa>>
+GraphQLGateway ..> Vault : <<lee secret/fitexpress/graphql>>
+
+note bottom of ApiGateway
+  Frontera de confianza 1: Internet -> Gateway (token del usuario).
+  Frontera 2: Gateway -> servicios (llave interna X-Service-Key).
+  Los servicios repiten la validación de llave, rol y propiedad.
+end note
+@enduml

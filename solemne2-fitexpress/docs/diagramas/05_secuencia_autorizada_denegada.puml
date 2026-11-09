@@ -1,0 +1,31 @@
+@startuml 05_secuencia_autorizada_denegada
+title Módulo 5 - Solicitud autorizada vs. denegadas
+autonumber
+actor "Cliente A" as a
+actor "Cliente B" as b
+participant "API Gateway" as gw
+participant "Auth Service" as au
+participant "orders" as o
+
+== Autorizada: A consulta su pedido ==
+a -> gw : GET /api/v1/orders/PED-1 (Bearer A)
+gw -> au : introspect
+au --> gw : user_id=A, rol=cliente
+gw -> o : GET /orders/PED-1 + X-User-Id=A + llave
+o -> o : pedido.user_id == A
+o --> gw : 200 pedido
+gw --> a : 200
+
+== Denegada: B intenta ver el pedido de A ==
+b -> gw : GET /api/v1/orders/PED-1 (Bearer B)
+gw -> au : introspect
+au --> gw : user_id=B, rol=cliente
+gw -> o : GET /orders/PED-1 + X-User-Id=B + llave
+o -> o : pedido.user_id != B
+o --> gw : 404 "Pedido no encontrado" (sin datos)
+gw --> b : 404
+
+== Denegada: llamada directa saltándose el gateway ==
+b -> o : GET :9002/orders con X-User-Rol=operador falso
+o --> b : 403 (sin X-Service-Key válida)
+@enduml

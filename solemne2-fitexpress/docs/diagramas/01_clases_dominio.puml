@@ -1,0 +1,172 @@
+@startuml 01_clases_dominio
+title Módulo 2 - Clases del dominio y servicios públicos (Fit Express)
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+skinparam packageStyle rectangle
+hide empty members
+
+package "auth (Auth Service)" #F4F6FA {
+  class Usuario {
+    id: String
+    email: String
+    passwordHash: String
+    salt: String
+    rol: Rol
+    activo: Boolean
+  }
+  class Sesion {
+    tokenHash: String
+    expiraEn: DateTime
+    revocada: Boolean
+  }
+  enum Rol {
+    cliente
+    operador
+  }
+}
+
+package "clients" #F1F7F2 {
+  class PerfilCliente {
+    userId: String
+    nombre: String
+    email: String
+    direccion: String
+    telefono: String [0..1]
+  }
+}
+
+package "inventory" #FAF6EE {
+  class Producto {
+    id: String
+    nombre: String
+    tag: String
+    precio: Integer
+    descripcion: String
+    ingredientes: String[1..*]
+    calorias: Integer
+    stock: Integer
+    activo: Boolean
+  }
+  class Reserva {
+    orderId: String
+    estado: activa | liberada
+  }
+}
+
+package "orders" #EEF4FA {
+  class Pedido {
+    id: String
+    userId: String
+    estado: EstadoPedido
+    total: Integer
+    direccionEntrega: String
+    idempotencyKey: String
+    creadoEn: DateTime
+  }
+  class DetallePedido {
+    productId: String
+    nombre: String
+    precioUnitario: Integer
+    cantidad: Integer
+    subtotal: Integer
+  }
+  class HistorialEstado {
+    estado: EstadoPedido
+    actor: String
+    fecha: DateTime
+  }
+  enum EstadoPedido {
+    pendiente_pago
+    pagado
+    en_preparacion
+    despachado
+    entregado
+    cancelado
+  }
+}
+
+package "payments" #F7F0F6 {
+  class Pago {
+    id: String
+    orderId: String
+    monto: Integer
+    estado: iniciado | aprobado | rechazado
+    providerRef: String
+  }
+  class EventoProveedor {
+    eventId: String
+    resultado: String
+    recibidoEn: DateTime
+  }
+}
+
+Usuario "1" -- "0..*" Sesion : abre >
+Usuario "1" -- "0..1" PerfilCliente : tiene >
+PerfilCliente "1" -- "0..*" Pedido : realiza >
+Pedido "1" *-- "1..*" DetallePedido : contiene >
+Pedido "1" *-- "1..*" HistorialEstado : registra >
+DetallePedido "0..*" --> "1" Producto : copia precio y nombre de >
+Pedido "1" -- "0..1" Reserva : aparta stock >
+Pedido "1" -- "0..*" Pago : se paga con >
+Pago "1" -- "0..*" EventoProveedor : recibe >
+
+package "Servicios públicos y DTO" #FFFFFF {
+  interface CatalogService <<service>> {
+    +consultarCatalogo(filtro): ProductoDTO[*]  /' S01 '/
+    +verDetalle(id): ProductoDetalleDTO  /' S02 '/
+    +crear / reemplazar / cambiarStock / retirar  /' S17-S20 '/
+  }
+  interface ClientService <<service>> {
+    +registrar(RegistroDTO): PerfilDTO  /' S03 '/
+    +verMiPerfil() / actualizarMiPerfil()  /' S06-S07 '/
+  }
+  interface AuthService <<service>> {
+    +iniciarSesion(email, clave): TokenDTO  /' S04 '/
+    +cerrarSesion()  /' S05 '/
+  }
+  interface OrderService <<service>> {
+    +confirmarPedido(items, idemKey): PedidoDTO  /' S08 '/
+    +listar() / ver(id) / anular(id)  /' S09-S11 '/
+    +cambiarEstado(id, estado)  /' S21 '/
+  }
+  interface PaymentService <<service>> {
+    +iniciarPago(orderId): PagoDTO  /' S12 '/
+    +consultarPago(id): PagoDTO  /' S13 '/
+  }
+  interface ResumenPedidoGraphQL <<service>> {
+    +resumenPedido(id): ResumenPedidoDTO  /' S15 '/
+    +misPedidos(limite): ResumenPedidoDTO[*]
+  }
+  class ProductoDTO <<DTO>> {
+    id, nombre, tag, precio,
+    descripcion, calorias, disponible
+  }
+  class PedidoDTO <<DTO>> {
+    id, estado, total, direccion_entrega,
+    creado_en, items[1..*]
+  }
+  class PagoDTO <<DTO>> {
+    id, order_id, monto, estado, provider_ref
+  }
+  class ResumenPedidoDTO <<DTO>> {
+    id, estado, total, items, pago [0..1]
+  }
+}
+
+CatalogService ..> ProductoDTO : <<usa>>
+OrderService ..> PedidoDTO : <<usa>>
+PaymentService ..> PagoDTO : <<usa>>
+ResumenPedidoGraphQL ..> ResumenPedidoDTO : <<usa>>
+CatalogService ..> Producto : <<usa>>
+OrderService ..> Pedido : <<usa>>
+PaymentService ..> Pago : <<usa>>
+ClientService ..> PerfilCliente : <<usa>>
+AuthService ..> Usuario : <<usa>>
+
+legend right
+  Notación: ── asociación | ◆── composición | ..> dependencia (el servicio usa la clase)
+  Multiplicidades en ambos extremos: 1, 0..1, 0..*, 1..*
+  El carrito NO es clase del backend: vive en el navegador hasta "Confirmar pedido".
+  Las relaciones entre paquetes son por id (cada servicio tiene su propia base).
+endlegend
+@enduml

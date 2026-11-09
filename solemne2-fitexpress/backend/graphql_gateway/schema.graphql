@@ -1,0 +1,33 @@
+type Query {
+    resumenPedido(id: ID!): ResumenPedido
+
+    misPedidos(limite: Int = 5): [ResumenPedido!]!
+}
+
+type ResumenPedido {
+    id: ID!
+    estado: String!
+    total: Int!
+    creadoEn: String!
+    direccionEntrega: String!
+    clienteId: String
+    items: [ItemResumen!]!
+    pago: PagoResumen
+}
+
+type ItemResumen {
+    productoId: ID!
+    nombre: String!
+    cantidad: Int!
+    precioUnitario: Int!
+    subtotal: Int!
+    tag: String
+    calorias: Int
+    disponibleHoy: Boolean
+}
+
+type PagoResumen {
+    id: ID!
+    estado: String!
+    monto: Int!
+}

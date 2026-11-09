@@ -1,0 +1,93 @@
+# Demostracion de flujos principales con curl (todo entra por el API Gateway, puerto 8000)
+
+$ curl -s "http://127.0.0.1:8000/api/v1/products?disponible=true"   # P01 Menu, visitante anonimo
+[
+    {
+        "id": "batido-proteico",
+        "nombre": "Batido Proteico",
+        "tag": "Post-entreno",
+        "precio": 3200,
+        "descripcion": "Plátano, proteína en polvo, leche de almendras y avena.",
+        "calorias": 340,
+        "disponible": true
+    },
+    {
+        "id": "bowl-vegano",
+  ...
+
+$ curl -s -X POST http://127.0.0.1:8000/api/v1/auth/registro -d {nombre, email, direccion, telefono, password}   # P04 Registro
+{"id":"USR-8b52c972","nombre":"Camila Rojas","email":"camila.rojas@correo-prueba.cl"}
+
+$ curl -s -X POST http://127.0.0.1:8000/api/v1/auth/login -d {email, password}
+{"access_token": "<token oculto en la evidencia>", "token_type": "bearer", "expires_in": 1800, "rol": "cliente"}
+
+$ curl -s -X POST http://127.0.0.1:8000/api/v1/orders -H "Authorization: Bearer <token>" -H "Idempotency-Key: pedido-camila-001" -d {items}   # P03 Confirmar pedido
+{
+    "id": "PED-15a01db3",
+    "estado": "pendiente_pago",
+    "total": 15000,
+    "direccion_entrega": "Av. Providencia 1234, Santiago",
+    "creado_en": "2026-11-09T19:11:19.175138+00:00",
+    "items": [
+        {
+            "product_id": "bowl-pollo",
+            "nombre": "Bowl de Pollo",
+            "precio_unitario": 5900,
+            "cantidad": 2,
+            "subtotal": 11800
+        },
+        {
+            "product_id": "batido-proteico",
+            "nombre": "Batido Proteico",
+            "precio_unitario": 3200,
+            "cantidad": 1,
+            "subtotal": 3200
+        }
+    ]
+}
+
+$ (mismo POST /orders repetido con la misma Idempotency-Key)
+id: PED-15a01db3 -> mismo pedido, no se duplica
+
+$ curl -s -X POST http://127.0.0.1:8000/api/v1/payments -H "Authorization: Bearer <token>" -d {"order_id": "PED-15a01db3"}
+{"id":"PAG-a7d6eb57","order_id":"PED-15a01db3","monto":15000,"estado":"iniciado","provider_ref":"PRV-1af229131e69"}
+
+$ python pruebas/proveedor_simulado.py PRV-1af229131e69 15000 aprobado   # aviso firmado del proveedor
+200 {"recibido":true,"duplicado":false,"estado":"aprobado"}
+
+$ curl -s -X POST http://127.0.0.1:8000/api/v1/graphql -H "Authorization: Bearer <token>" -d {query resumenPedido}   # agregacion orders+inventory+payments
+{
+    "data": {
+        "resumenPedido": {
+            "id": "PED-15a01db3",
+            "estado": "pagado",
+            "total": 15000,
+            "items": [
+                {
+                    "nombre": "Bowl de Pollo",
+                    "cantidad": 2,
+                    "subtotal": 11800,
+                    "tag": "Alto en proteína",
+                    "calorias": 520
+                },
+                {
+                    "nombre": "Batido Proteico",
+                    "cantidad": 1,
+                    "subtotal": 3200,
+                    "tag": "Post-entreno",
+                    "calorias": 340
+                }
+            ],
+            "pago": {
+                "estado": "aprobado",
+                "monto": 15000
+            }
+        }
+    }
+}
+
+$ curl -i -s http://127.0.0.1:8000/api/v1/orders   # sin sesion
+HTTP 401
+
+$ curl -s http://127.0.0.1:9001/products   # intento de acceso directo a inventory, saltandose el gateway
+{"detail":"Llamada no autorizada"}  HTTP 403

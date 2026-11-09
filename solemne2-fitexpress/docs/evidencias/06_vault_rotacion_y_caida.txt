@@ -1,0 +1,34 @@
+# Rotacion de llaves y caida del gestor de secretos (Vault)
+
+## 1) Rotacion sin tocar codigo
+$ python cargar_secretos.py --rotar
+  secret/fitexpress/gateway: auth_key, inventory_key, orders_key, clients_key, payments_key, graphql_key
+  secret/fitexpress/auth: auth_key
+  secret/fitexpress/inventory: inventory_key
+  secret/fitexpress/clients: clients_key, auth_key
+  secret/fitexpress/orders: orders_key, inventory_key, clients_key
+  secret/fitexpress/payments: payments_key, orders_key, provider_webhook_secret
+  secret/fitexpress/graphql: graphql_key, orders_key, inventory_key, payments_key
+  secret/fitexpress/proveedor-simulado: provider_webhook_secret
+
+Listo. Los valores no se muestran a proposito.
+Llaves rotadas: los servicios las toman solas en maximo 60 segundos.
+
+(se espera 61 s a que venza la cache de 60 s de cada servicio)
+$ curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8000/api/v1/products     # el sistema sigue funcionando con las llaves nuevas
+HTTP 200
+$ curl http://127.0.0.1:9001/products -H "X-Service-Key: <llave ANTERIOR de inventory>"   # la llave vieja ya no sirve
+{"detail":"Llamada no autorizada"}  HTTP 403
+
+## 2) Vault apagado
+$ docker stop vault-dev   (en el equipo de prueba: se detiene el proceso de Vault)
+(se espera 61 s a que venza la cache)
+$ curl -s http://127.0.0.1:8000/api/v1/products
+{"detail":"Gestor de secretos no disponible"}  HTTP 503
+-> el gateway corta la solicitud: sin gestor de secretos no hay llaves y no se usan valores por defecto
+
+## 3) Recuperacion
+$ docker start vault-dev  +  python cargar_secretos.py   (Vault en modo dev parte vacio)
+Listo. Los valores no se muestran a proposito.
+$ curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8000/api/v1/products
+HTTP 200
