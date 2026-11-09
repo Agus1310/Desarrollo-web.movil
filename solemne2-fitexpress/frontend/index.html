@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fit Express — Comida real, rápido</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+    <div class="header-inner">
+        <a href="#inicio" class="logo">Fit&nbsp;Express</a>
+        <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+        <nav class="main-nav" id="mainNav">
+            <ul>
+                <li><a href="#menu">Menú</a></li>
+                <li><a href="#pedido">Mi pedido <span id="navCartCount" class="cart-badge">0</span></a></li>
+                <li data-solo="sesion" hidden><a href="#mis-pedidos">Mis pedidos</a></li>
+                <li data-solo="operador" hidden><a href="#panel">Panel</a></li>
+                <li data-solo="anonimo"><a href="#cuenta" class="nav-cuenta">Entrar</a></li>
+                <li data-solo="sesion" hidden class="nav-usuario">
+                    <span id="navUsuario"></span>
+                    <button type="button" id="btnSalir" class="btn-chip">Salir</button>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</header>
+
+<div id="aviso" class="aviso" role="status" hidden></div>
+
+<main>
+
+    <section id="inicio" class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>Combustible real para días que no paran.</h1>
+                <p>Bowls proteicos, snacks y batidos, listos en minutos. Pides por acá y te llega frío, fresco y a tiempo.</p>
+                <div class="hero-actions">
+                    <a href="#menu" class="btn btn-primary">Ver el menú</a>
+                    <a href="#cuenta" class="btn btn-outline btn-hero" data-solo="anonimo">Crear cuenta</a>
+                </div>
+            </div>
+            <img class="hero-image" src="images/hero-fitexpress.jpg" alt="Variedad de ingredientes frescos de Fit Express" loading="lazy">
+        </div>
+        <dl class="hero-stats">
+            <div><dt>25 min</dt><dd>tiempo promedio de entrega</dd></div>
+            <div><dt id="statProductos">6</dt><dd>preparaciones en el menú de hoy</dd></div>
+            <div><dt>100%</dt><dd>ingredientes frescos del día</dd></div>
+        </dl>
+    </section>
+
+    <section id="menu" class="section">
+        <div class="section-heading">
+            <h2>Menú de hoy</h2>
+            <p>Elige una preparación para ver el detalle, o agrégala directo a tu pedido.</p>
+        </div>
+        <div class="filtros" id="filtros"></div>
+        <p id="menuEstado" class="estado-carga">Cargando el menú...</p>
+        <div id="menuGrid" class="menu-grid"></div>
+    </section>
+
+    <section id="detalle" class="section detalle-section" hidden>
+        <div class="section-heading">
+            <h2>Detalle de la preparación</h2>
+        </div>
+        <article id="detalleContenido" class="detalle-card"></article>
+    </section>
+
+    <section id="pedido" class="section pedido-section">
+        <div class="section-heading">
+            <h2>Mi pedido</h2>
+            <p>Esto es lo que llevas agregado. El total final lo calcula el local al confirmar.</p>
+        </div>
+
+        <div id="pedidoVacio" class="pedido-vacio">
+            Todavía no agregas nada. Elige algo del <a href="#menu">menú</a> para empezar tu pedido.
+        </div>
+
+        <table id="pedidoTabla" class="pedido-tabla" hidden>
+            <thead>
+                <tr>
+                    <th scope="col">Preparación</th>
+                    <th scope="col">Cantidad</th>
+                    <th scope="col">Subtotal</th>
+                    <th scope="col"><span class="sr-only">Quitar</span></th>
+                </tr>
+            </thead>
+            <tbody id="pedidoBody"></tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2">Total estimado</td>
+                    <td id="pedidoTotal">$0</td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div id="pedidoAcciones" class="pedido-acciones" hidden>
+            <button type="button" id="btnVaciarPedido" class="btn btn-outline">Vaciar pedido</button>
+            <button type="button" id="btnConfirmarPedido" class="btn btn-primary">Confirmar pedido</button>
+        </div>
+
+        <div id="pedidoConfirmado" class="confirmacion" hidden>
+            <h3>¡Pedido confirmado!</h3>
+            <p id="pedidoConfirmadoTexto"></p>
+            <div class="pedido-acciones">
+                <button type="button" id="btnPagarConfirmado" class="btn btn-primary">Pagar ahora</button>
+                <a href="#mis-pedidos" class="btn btn-outline">Ver mis pedidos</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="mis-pedidos" class="section" hidden>
+        <div class="section-heading">
+            <h2>Mis pedidos</h2>
+            <p>El estado se actualiza cuando el local prepara y despacha tu pedido.</p>
+        </div>
+        <button type="button" id="btnActualizarPedidos" class="btn-chip">Actualizar</button>
+        <p id="misPedidosEstado" class="estado-carga"></p>
+        <div id="misPedidosLista" class="lista-pedidos"></div>
+    </section>
+
+    <section id="panel" class="section" hidden>
+        <div class="section-heading">
+            <h2>Panel del operador</h2>
+            <p>Pedidos del local, stock del menú y ventas del día.</p>
+        </div>
+
+        <div class="panel-grid">
+            <div class="panel-bloque">
+                <h3>Pedidos</h3>
+                <button type="button" id="btnActualizarPanel" class="btn-chip">Actualizar</button>
+                <div id="panelPedidos" class="lista-pedidos"></div>
+            </div>
+            <div class="panel-bloque">
+                <h3>Stock</h3>
+                <table class="pedido-tabla tabla-compacta">
+                    <thead><tr><th>Producto</th><th>Stock</th><th></th></tr></thead>
+                    <tbody id="panelStock"></tbody>
+                </table>
+                <h3 class="mt">Ventas del día</h3>
+                <table class="pedido-tabla tabla-compacta">
+                    <thead><tr><th>Producto</th><th>Unidades</th><th>Ventas</th></tr></thead>
+                    <tbody id="panelVentas"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section id="cuenta" class="section registro-section">
+        <div class="section-heading">
+            <h2>Tu cuenta</h2>
+            <p>Entra para confirmar pedidos y seguir su estado.</p>
+        </div>
+
+        <div class="tabs" role="tablist">
+            <button type="button" class="tab activa" data-tab="login" role="tab">Entrar</button>
+            <button type="button" class="tab" data-tab="registro" role="tab">Registrarme</button>
+        </div>
+
+        <form id="formLogin" class="form-registro" novalidate>
+            <div class="campo">
+                <label for="loginEmail">Email</label>
+                <input type="email" id="loginEmail" autocomplete="email">
+            </div>
+            <div class="campo">
+                <label for="loginPassword">Contraseña</label>
+                <input type="password" id="loginPassword" autocomplete="current-password">
+                <span class="error" id="errorLogin"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Entrar</button>
+        </form>
+
+        <form id="formRegistro" class="form-registro" novalidate hidden>
+            <div class="campo">
+                <label for="nombre">Nombre</label>
+                <input type="text" id="nombre" name="nombre" autocomplete="name">
+                <span class="error" id="errorNombre"></span>
+            </div>
+
+            <div class="campo">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" autocomplete="email">
+                <span class="error" id="errorEmail"></span>
+            </div>
+
+            <div class="campo">
+                <label for="direccion">Dirección de entrega</label>
+                <input type="text" id="direccion" name="direccion" autocomplete="street-address">
+                <span class="error" id="errorDireccion"></span>
+            </div>
+
+            <div class="campo">
+                <label for="telefono">Teléfono (opcional)</label>
+                <input type="tel" id="telefono" name="telefono" autocomplete="tel" placeholder="+56 9 1234 5678">
+                <span class="error" id="errorTelefono"></span>
+            </div>
+
+            <div class="campo">
+                <label for="password">Contraseña (mínimo 8 caracteres)</label>
+                <input type="password" id="password" name="password" autocomplete="new-password">
+                <span class="error" id="errorPassword"></span>
+            </div>
+
+            <span class="error" id="errorRegistro"></span>
+            <button type="submit" class="btn btn-primary">Registrarme</button>
+        </form>
+
+        <div id="sesionActiva" class="confirmacion" hidden>
+            <h3>Hola, <span id="sesionNombre"></span></h3>
+            <p>Ya puedes confirmar tu pedido. Tu sesión dura 30 minutos.</p>
+        </div>
+    </section>
+
+</main>
+
+<footer class="site-footer">
+    <p>Fit Express — comida real, rápido © 2026</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

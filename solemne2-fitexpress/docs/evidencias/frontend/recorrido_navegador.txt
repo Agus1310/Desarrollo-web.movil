@@ -1,0 +1,13 @@
+# Recorrido en el navegador (Chromium automatizado) contra el backend real, frontend en http://127.0.0.1:5500
+1. Menu cargado desde GET /api/v1/products: 6 tarjetas                                  -> 01_menu.png
+2. Visitante agrega 2 Bowl de Pollo + 1 Batido y aprieta Confirmar sin sesion:
+   aviso "Entra a tu cuenta para confirmar el pedido." (no se llama a POST /orders)       -> 02_carrito.png
+3. Registro con contrasena corta: "La contrasena debe tener al menos 8 caracteres."
+4. Registro valido -> POST /auth/registro + POST /auth/login, la barra muestra "Camila"
+5. Confirmar pedido -> POST /orders con Idempotency-Key:
+   "Pedido PED-6ce4d5ed: 3 preparacion(es) por $15.000. Se despacha a Av. Providencia 1234, Santiago..."  -> 03_pedido_confirmado.png
+6. Pagar ahora -> POST /payments: "Pago de $15.000 enviado al proveedor (ref. PRV-ad1aefc9c421)"
+7. Proveedor simulado envia aviso firmado: 200 {"recibido":true,"duplicado":false,"estado":"aprobado"}
+8. Mis pedidos (GraphQL misPedidos, agrega orders + inventory + payments): estado "Pagado", pago aprobado -> 04_mis_pedidos.png
+9. Vista movil con menu hamburguesa                                                    -> 06_movil.png
+10. Salir, entrar como operador, Panel: "Marcar en preparacion" -> PATCH /orders/{id}/estado -> "En preparacion"  -> 05_panel_operador.png

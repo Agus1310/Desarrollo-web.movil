@@ -1,0 +1,45 @@
+@startuml 03_secuencia_pedido_pago
+title Módulo 3 - Secuencia representativa: confirmar pedido y pagarlo
+autonumber
+actor Cliente as c
+participant "Frontend" as fe
+participant "API Gateway" as gw
+participant "Auth Service" as au
+participant "orders" as o
+participant "clients" as cl
+participant "inventory" as i
+participant "payments" as p
+actor "Proveedor de pagos" as pr
+
+c -> fe : Confirmar pedido
+fe -> gw : POST /api/v1/orders\nBearer token + Idempotency-Key\n{items: [{product_id, cantidad}]}
+gw -> au : POST /introspect (auth_key)
+au --> gw : active, user_id, rol=cliente
+gw -> o : POST /orders (orders_key + X-User-Id)
+o -> cl : GET /internal/clients/{user_id}
+cl --> o : dirección de entrega
+o -> i : GET /internal/products?ids=...
+i --> o : precios oficiales
+o -> i : POST /internal/reservas {order_id, items}
+alt hay stock
+  i --> o : reserva activa
+  o -> o : guarda pedido (pendiente_pago),\ntotal calculado en el servidor
+  o --> gw : 201 PedidoDTO
+  gw --> fe : 201
+else sin stock
+  i --> o : 409
+  o --> gw : 409 (no se crea el pedido)
+end
+c -> fe : Pagar
+fe -> gw : POST /api/v1/payments {order_id}
+gw -> p : POST /payments
+p -> o : GET /internal/orders/{id}
+o --> p : dueño, estado, total
+p --> gw : 201 PagoDTO (monto = total de orders)
+pr -> gw : POST /api/v1/payments/webhook\nX-Proveedor-Firma (HMAC)
+gw -> p : reenvía cuerpo exacto
+p -> p : valida firma, monto y\nevent_id no repetido
+p -> o : POST /internal/orders/{id}/pagado
+o --> p : estado = pagado
+p --> pr : 200 recibido
+@enduml

@@ -1,0 +1,10 @@
+# Prueba de carga ejecutada con: python pruebas/carga.py (limites del gateway subidos solo para esta prueba)
+Equipo: Linux x86_64 | Python 3.13.18
+Recursos antes: 9 procesos uvicorn | CPU 0% | memoria 431 MB
+Recursos despues: 9 procesos uvicorn | CPU 0% | memoria 648 MB
+
+escenario                        n  conc     rps   p50 ms   p95 ms   max ms  errores
+GET /products (anonimo)        400    20    64.4    297.1    405.4    568.0        0
+POST /orders (cliente)          60    10    17.2    577.7    679.0    680.6        0
+POST /graphql misPedidos       100    10    19.1    529.8    690.8    760.0        0
+Muestreo con ps cada 0,5 s durante la prueba (procesos uvicorn): CPU promedio acumulada sumada hasta 75% | memoria maxima sumada 607 MB | equipo de prueba Linux de 2 nucleos

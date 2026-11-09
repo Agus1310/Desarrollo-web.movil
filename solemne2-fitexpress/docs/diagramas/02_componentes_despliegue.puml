@@ -1,0 +1,67 @@
+@startuml 02_componentes_despliegue
+title Módulo 3 - Mapa de componentes y despliegue local (Fit Express)
+skinparam componentStyle rectangle
+left to right direction
+
+actor "Visitante / Cliente" as cli
+actor "Operador" as op
+actor "Proveedor de pagos\n(simulado)" as prov
+
+node "Navegador" {
+  [Frontend responsivo\n(Taller 1: HTML/CSS/JS)] as fe
+}
+
+node "Equipo local (127.0.0.1)" {
+  frame "Zona pública (único puerto usado desde afuera)" {
+    [API Gateway\n:8000] as gw
+  }
+  frame "Zona privada (exigen X-Service-Key)" {
+    [Auth Service\n:8100] as auth
+    [GraphQL Gateway\n:9005] as gql
+    [inventory\n:9001] as inv
+    [orders\n:9002] as ord
+    [clients\n:9003] as clie
+    [payments\n:9004] as pay
+  }
+  frame "Datos (un archivo SQLite por servicio)" {
+    database "auth.db" as dba
+    database "inventory.db" as dbi
+    database "orders.db" as dbo
+    database "clients.db" as dbc
+    database "payments.db" as dbp
+  }
+  frame "Secretos (Docker)" {
+    [HashiCorp Vault\n:8200 (KV v2)] as vault
+  }
+}
+
+cli --> fe
+op --> fe
+fe --> gw : HTTPS/JSON\n/api/v1/*
+prov --> gw : POST /payments/webhook\n(firma HMAC)
+gw --> auth : introspect / login
+gw --> inv
+gw --> ord
+gw --> clie
+gw --> pay
+gw --> gql : POST /graphql
+gql --> ord : pedidos
+gql --> inv : productos (1 llamada)
+gql --> pay : pagos (1 llamada)
+ord --> inv : precios + reserva de stock
+ord --> clie : dirección de entrega
+pay --> ord : monto / marcar pagado
+clie --> auth : crear credencial
+auth --> dba
+inv --> dbi
+ord --> dbo
+clie --> dbc
+pay --> dbp
+gw ..> vault : llaves
+auth ..> vault
+inv ..> vault
+ord ..> vault
+clie ..> vault
+pay ..> vault
+gql ..> vault
+@enduml

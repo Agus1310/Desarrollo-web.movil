@@ -1,0 +1,12 @@
+### python iniciar.py --excepto inventory   +   CAIDA=inventory python -m pytest pruebas/test_6_caidas.py -v
+pruebas/test_6_caidas.py::test_catalogo_con_inventory_caido_da_503_controlado PASSED [ 33%]
+pruebas/test_6_caidas.py::test_pedido_con_inventory_caido_no_se_crea PASSED [ 66%]
+pruebas/test_6_caidas.py::test_graphql_con_payments_caido_responde_parcial_identificado SKIPPED [100%]
+========================= 2 passed, 1 skipped in 0.40s =========================
+
+### python iniciar.py --excepto payments   +   CAIDA=payments python -m pytest pruebas/test_6_caidas.py -v
+pruebas/test_6_caidas.py::test_catalogo_con_inventory_caido_da_503_controlado SKIPPED [ 33%]
+pruebas/test_6_caidas.py::test_pedido_con_inventory_caido_no_se_crea SKIPPED [ 66%]
+pruebas/test_6_caidas.py::test_graphql_con_payments_caido_responde_parcial_identificado PASSED [100%]
+========================= 1 passed, 2 skipped in 0.55s =========================
+

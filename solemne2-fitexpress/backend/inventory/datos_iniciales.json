@@ -1,0 +1,20 @@
+[
+    {"id": "bowl-pollo", "nombre": "Bowl de Pollo", "tag": "Alto en proteína", "precio": 5900,
+     "descripcion": "Pollo a la plancha, quinoa, palta y verduras salteadas.",
+     "ingredientes": ["Pechuga de pollo", "Quinoa", "Palta", "Zanahoria", "Brócoli"], "calorias": 520, "stock": 20},
+    {"id": "bowl-vegano", "nombre": "Bowl Vegano", "tag": "Vegano", "precio": 5500,
+     "descripcion": "Garbanzos especiados, tofu grillado y espinaca fresca.",
+     "ingredientes": ["Garbanzos", "Tofu", "Espinaca", "Quinoa", "Limón"], "calorias": 470, "stock": 20},
+    {"id": "snack-energetico", "nombre": "Snack Energético", "tag": "Para llevar", "precio": 2500,
+     "descripcion": "Mix de frutos secos, avena y miel, ideal antes de entrenar.",
+     "ingredientes": ["Avena", "Almendras", "Pasas", "Miel"], "calorias": 310, "stock": 30},
+    {"id": "bowl-vegetariano", "nombre": "Bowl Vegetariano", "tag": "Vegetariano", "precio": 5300,
+     "descripcion": "Huevo pochado, batata asada, kale y semillas de zapallo.",
+     "ingredientes": ["Huevo", "Batata", "Kale", "Semillas de zapallo"], "calorias": 480, "stock": 20},
+    {"id": "batido-proteico", "nombre": "Batido Proteico", "tag": "Post-entreno", "precio": 3200,
+     "descripcion": "Plátano, proteína en polvo, leche de almendras y avena.",
+     "ingredientes": ["Plátano", "Proteína en polvo", "Leche de almendras", "Avena"], "calorias": 340, "stock": 25},
+    {"id": "ensalada-fit", "nombre": "Ensalada César Fit", "tag": "Bajo en calorías", "precio": 4800,
+     "descripcion": "Versión liviana de la clásica, con aderezo yogur y pollo grillado.",
+     "ingredientes": ["Lechuga", "Pollo grillado", "Parmesano", "Aderezo de yogur"], "calorias": 380, "stock": 20}
+]
